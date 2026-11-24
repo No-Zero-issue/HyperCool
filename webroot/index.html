@@ -1012,7 +1012,7 @@ html[data-style="mono"],html[data-style="mono"] body{
     <div class="group apr">
       <div class="item" id="ap-dark"><div class="row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></div><div class="txt press" id="ap-dark-open"><div class="ttl" data-i18n="Dark theme">Dark theme</div><div class="desc" id="ap-dark-sum">On (Standard)</div></div><span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6"/></svg></span><div class="ctl"><label class="sw"><input type="checkbox" id="ap-dark-sw" aria-label="Dark theme" data-i18n-attr="aria-label"><span class="track"><span class="thumb"><svg class="on" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><svg class="off" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg></span></span></label></div></div></div>
       <div class="item press" id="ap-color"><div class="row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.4 0 2-.9 2-1.8 0-.6-.3-1.1-.6-1.5-.3-.4-.5-.8-.5-1.3 0-.9.7-1.6 1.6-1.6H17a3.5 3.5 0 0 0 3.5-3.5C20.5 7 16.8 3.5 12 3.5z"/><circle cx="7.6" cy="11.4" r="1.2"/><circle cx="10.2" cy="7.4" r="1.2"/><circle cx="14.6" cy="7.4" r="1.2"/></svg></div><div class="txt"><div class="ttl" data-i18n="Colors">Colors</div><div class="desc" id="ap-color-sum" data-i18n="System (Dynamic)">System (Dynamic)</div></div><span class="swatch" id="ap-color-sw"></span></div></div>
-      <div class="item" id="ap-lang"><div class="row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.3 3.7 5.3 3.7 8.5S14.4 18.2 12 20.5C9.6 18.2 8.3 15.2 8.3 12S9.6 5.8 12 3.5z"/></svg></div><div class="txt"><div class="ttl" data-i18n="Language">Language</div><div class="desc" data-i18n="Interface language">Interface language</div></div><div class="ctl"><div class="pill"><select id="ap-lang-sel" aria-label="Language" data-i18n-attr="aria-label"><option value="zh">简体中文</option><option value="en">English</option><option value="auto">跟随系统</option></select></div></div></div></div>
+      <div class="item" id="ap-lang"><div class="row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.3 3.7 5.3 3.7 8.5S14.4 18.2 12 20.5C9.6 18.2 8.3 15.2 8.3 12S9.6 5.8 12 3.5z"/></svg></div><div class="txt"><div class="ttl" data-i18n="Language">Language</div><div class="desc" data-i18n="Interface language">Interface language</div></div><div class="ctl"><div class="pill"><select id="ap-lang-sel" aria-label="Language" data-i18n-attr="aria-label"><option value="auto">跟随系统</option><option value="zh">简体中文</option><option value="en">English</option></select></div></div></div></div>
       <div class="item" id="ap-blur"><div class="row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5s6 6.2 6 10.5a6 6 0 0 1-12 0C6 9.7 12 3.5 12 3.5z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/></svg></div><div class="txt press" id="ap-blur-txt"><div class="ttl" data-i18n="Blur toolbar">Blur toolbar</div><div class="desc" data-i18n="Frosted glass effect on the header and the bottom bar">Frosted glass effect on the header and the bottom bar</div></div><div class="ctl"><label class="sw"><input type="checkbox" id="ap-blur-sw" aria-label="Blur toolbar" data-i18n-attr="aria-label"><span class="track"><span class="thumb"><svg class="on" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><svg class="off" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg></span></span></label></div></div></div>
     </div>
 
@@ -1112,9 +1112,11 @@ html[data-style="mono"],html[data-style="mono"] body{
   var LANG = (function () {
     var v = null;
     try { v = localStorage.getItem(LANG_KEY); } catch (e) { v = null; }
-    if (v === 'en') return 'en';
-    // KernelSU's own WebUI host also writes hc_lang ('auto'), so anything but 'en' means Chinese
-    return 'zh';
+    if (v === 'en' || v === 'zh') return v;
+    // KernelSU's own WebUI host writes hc_lang too (seen as 'auto'), so only an explicit
+    // 'en' / 'zh' counts and anything else follows the system language
+    var ls = (navigator.languages && navigator.languages[0]) || navigator.language || '';
+    return /^zh\b|^zh[-_]/i.test(ls) ? 'zh' : 'en';
   })();
   // English -> Chinese for everything the page shows. A string that is not listed here stays English.
   var ZH = {
@@ -6663,10 +6665,10 @@ html[data-style="mono"],html[data-style="mono"] body{
     if (!sel) return;
     var v = null;
     try { v = localStorage.getItem(LANG_KEY); } catch (e) { v = null; }
-    sel.value = v === 'en' ? 'en' : 'zh';
+    sel.value = v === 'en' || v === 'zh' ? v : 'auto';
     sel.onchange = function () {
       try {
-        if (this.value === 'zh') localStorage.removeItem(LANG_KEY);
+        if (this.value === 'auto') localStorage.removeItem(LANG_KEY);
         else localStorage.setItem(LANG_KEY, this.value);
       } catch (e) { /* no storage */ }
       location.reload();
@@ -6751,7 +6753,7 @@ html[data-style="mono"],html[data-style="mono"] body{
       var v = el.getAttribute(a);
       if (v && ZH[v]) el.setAttribute(a, ZH[v]);
     });
-    if (document.documentElement.lang !== 'zh-CN') document.documentElement.lang = 'zh-CN';
+    if (document.documentElement.lang !== (LANG === 'zh' ? 'zh-CN' : 'en')) document.documentElement.lang = LANG === 'zh' ? 'zh-CN' : 'en';
   }
 
   /* boot */
